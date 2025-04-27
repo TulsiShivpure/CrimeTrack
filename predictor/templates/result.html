@@ -497,45 +497,37 @@
     </section>
 
     <script>
-        // Initialize Lucide icons
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
-            
-            // Get the crime rate value
-            const crimeRateElement = document.getElementById('crimeRateValue');
-            const crimeRateValue = parseFloat(crimeRateElement.innerText);
-            
-            // Calculate percentage (based on scale of 0-20)
-            const maxValue = 20;
-            let percentage = (crimeRateValue / maxValue) * 100;
-            
-            // Cap at 100% for values over 20
-            percentage = Math.min(percentage, 100);
-            
-            // Update progress bar width
-            const progressBar = document.getElementById('progressBar');
-            progressBar.style.width = percentage + '%';
-            
-            // Position the current value marker
-            const currentValueMarker = document.getElementById('currentValueMarker');
-            currentValueMarker.innerText = crimeRateValue.toFixed(2);
-            currentValueMarker.style.left = percentage + '%';
-            
-            // Determine color based on value ranges
-            let barColor;
-            if (crimeRateValue < 5) {
-                barColor = '#4ade80'; // Green
-            } else if (crimeRateValue < 10) {
-                barColor = '#fbbf24'; // Yellow
-            } else {
-                barColor = '#ef4444'; // Red
-            }
-            
-            // Optional: Change to solid color instead of gradient based on value
-            // progressBar.style.background = barColor;
-        });
+        // Add this JavaScript to your existing script section
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Lucide icons if available
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+    
+    // Get the crime rate value from your display
+    const crimeRateElement = document.querySelector('.crime-rate-value');
+    const crimeRateValue = parseFloat(crimeRateElement.innerText);
+    
+    // Calculate the percentage (treating the value as a direct percentage)
+    let percentage = crimeRateValue;
+    
+    // Cap at 100% for values over 100
+    percentage = Math.min(percentage, 100);
+    
+    // Update the progress bar width
+    const progressBar = document.querySelector('.progress-bar');
+    progressBar.style.width = percentage + '%';
+    
+    // You can also update the color based on the percentage if desired
+    // This is optional and can be removed if you want to keep your original gradient
+    if (percentage < 33) {
+        progressBar.style.background = '#4ade80'; // Green for low values
+    } else if (percentage < 66) {
+        progressBar.style.background = '#fbbf24'; // Yellow for medium values
+    } else {
+        progressBar.style.background = '#ef4444'; // Red for high values
+    }
+});
     </script>
 </body>
 </html>

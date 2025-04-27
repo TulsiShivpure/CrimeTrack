@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: crime-predictor
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn CrimeTrack.wsgi:application
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: CrimeTrack.settings

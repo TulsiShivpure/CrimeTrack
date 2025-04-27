@@ -1,0 +1,505 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Crime Track - Advanced Crime Prediction Analytics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #eab308;          /* Yellow */
+            --primary-dark: #ca8a04;     /* Darker yellow */
+            --secondary: #facc15;        /* Lighter yellow */
+            --accent: #f59e0b;           /* Amber/orange accent */
+            --bg-dark: #0d1b2a;          /* Navy blue dark background */
+            --bg-light: #1b263b;         /* Navy blue lighter background */
+            --text-primary: #f8fafc;     /* Text colors */
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: rgba(71, 85, 105, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #162236 50%, #1e2b3d 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("");
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .glow {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, rgba(10, 16, 35, 0) 70%);
+            filter: blur(60px);
+            z-index: -1;
+        }
+
+        .glow-1 {
+            top: -20vw;
+            right: -10vw;
+        }
+
+        .glow-2 {
+            bottom: -25vw;
+            left: -15vw;
+            background: radial-gradient(circle, rgba(250, 204, 21, 0.15) 0%, rgba(10, 16, 35, 0) 70%);
+        }
+
+        header {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(27, 38, 59, 0.6);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
+            gap: 1rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
+        }
+
+        .quote {
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            position: relative;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .quote::before, .quote::after {
+            content: '"';
+            font-family: Georgia, serif;
+            font-size: 1.75rem;
+            color: var(--primary);
+            opacity: 0.4;
+            position: absolute;
+            line-height: 0;
+        }
+
+        .quote::before {
+            left: -1.25rem;
+            top: 0.5rem;
+        }
+
+        .quote::after {
+            right: -1.25rem;
+            bottom: 0;
+        }
+
+        main {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            position: relative;
+        }
+
+        .card {
+            background: rgba(30, 51, 79, 0.7);
+            backdrop-filter: blur(20px);
+            padding: 4rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            z-index: 1;
+        }
+
+        .card h2 {
+            font-size: 2.75rem;
+            font-weight: 600;
+            margin-bottom: 3rem;
+            color: var(--text-primary);
+            position: relative;
+            padding-bottom: 1rem;
+            text-align: center;
+        }
+
+        .card h2::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 100px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 2.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .select-container {
+            position: relative;
+        }
+
+        /* Fix for dropdown overflow */
+        select {
+            width: 100%;
+            background-color: rgba(51, 65, 95, 0.7);
+            border: 1px solid rgba(71, 85, 105, 0.8);
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.75rem;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            color: var(--text-primary);
+            font-size: 1.3rem; 
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 4rem;
+            text-indent: 0.01px;
+            text-overflow: '';
+            overflow: hidden;
+            padding-right: 2.5rem;
+        }
+
+        /* Fix dropdown menu size and positioning */
+        select option {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* Prevent dropdown from expanding too large */
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.4);
+            border-color: var(--primary);
+        }
+
+        select:hover {
+            background-color: rgba(51, 65, 95, 0.9);
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            pointer-events: none;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .select-container:hover .select-arrow {
+            transform: translateY(2px);
+            color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: #0f172a;
+            font-weight: 700;
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(234, 179, 8, 0.25);
+            font-size: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(234, 179, 8, 0.4);
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn i {
+            transition: transform 0.3s ease;
+            width: 24px;
+            height: 24px;
+        }
+
+        .btn:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Fix for dropdown in native browsers */
+        @-moz-document url-prefix() {
+            select {
+                background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23CBD5E1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+                background-repeat: no-repeat;
+                background-position: right 1.5rem center;
+                background-size: 0.8rem auto;
+            }
+        }
+
+        /* Chrome specific fix */
+        @media screen and (-webkit-min-device-pixel-ratio:0) {
+            select {
+                padding-right: 3rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float { animation: float 6s ease-in-out infinite; }
+    </style>
+</head>
+
+<body>
+    <!-- Background glows -->
+    <div class="glow glow-1"></div>
+    <!-- <div class="glow glow-2"></div> -->
+
+    <!-- Combined transparent header with title and quote -->
+    <header>
+        <div class="logo-container">
+            <h1>Crime Track</h1>
+        </div>
+        <p class="quote">Awareness is the first step toward a safer society.</p>
+    </header>
+
+    <main>
+        <!-- Enlarged Form Container -->
+        <div class="card form-card float">
+            <h2>Crime Prediction Analysis</h2>
+            
+            <form action="/predict/" method="POST" id="prediction-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="city">SELECT CITY</label>
+                    <div class="select-container">
+                        <select name="city" id="city">
+                            <option value="0">Ahmedabad</option>
+                            <option value="1">Bengaluru</option>
+                            <option value="2">Chennai</option>
+                            <option value="3">Coimbatore</option>
+                            <option value="4">Delhi</option>
+                            <option value="5">Ghaziabad</option>
+                            <option value="6">Hyderabad</option>
+                            <option value="7">Indore</option>
+                            <option value="8">Jaipur</option>
+                            <option value="9">Kanpur</option>
+                            <option value="10">Kochi</option>
+                            <option value="11">Kolkata</option>
+                            <option value="12">Kozhikode</option>
+                            <option value="13">Lucknow</option>
+                            <option value="14">Mumbai</option>
+                            <option value="15">Nagpur</option>
+                            <option value="16">Patna</option>
+                            <option value="17">Pune</option>
+                            <option value="18">Surat</option>
+                        </select>
+                        <div class="select-arrow">
+                            <i data-lucide="chevron-down" width="20" height="20"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="type">SELECT CRIME TYPE</label>
+                    <div class="select-container">
+                        <select name="type" id="type">
+                            <option value="9">Murder</option>
+                            <option value="8">Kidnapping</option>
+                            <option value="7">Economic Offences</option>
+                            <option value="6">Cyber Crimes</option>
+                            <option value="5">Crime against Women</option>
+                            <option value="4">Crime against Children</option>
+                            <option value="3">Crime against Senior Citizens</option>
+                            <option value="2">Crime against ST</option>
+                            <option value="1">Crime against SC</option>
+                            <option value="0">Crime Committed by Juveniles</option>
+                        </select>
+                        <div class="select-arrow">
+                            <i data-lucide="chevron-down" width="20" height="20"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="year">SELECT YEAR</label>
+                    <div class="select-container">
+                        <select name="year" id="year">
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="2014">2014</option>
+                            <option value="2013">2013</option>
+                            <option value="2012">2012</option>
+                            <option value="2011">2011</option>
+                            <option value="2010">2010</option>
+                            <option value="2009">2009</option>
+                            <option value="2008">2008</option>
+                            <option value="2007">2007</option>
+                            <option value="2006">2006</option>
+                            <option value="2005">2005</option>
+                            <option value="2004">2004</option>
+                            <option value="2003">2003</option>
+                            <option value="2002">2002</option>
+                            <option value="2001">2001</option>
+                            <option value="2000">2000</option>
+                        </select>
+                        <div class="select-arrow">
+                            <i data-lucide="chevron-down" width="20" height="20"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn" id="predict-btn">
+                    <i data-lucide="search" width="24" height="24"></i>
+                    Predict Crime Rate
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make sure Lucide icons are properly initialized
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            // Handle select dropdown positioning
+            const selectElements = document.querySelectorAll('select');
+            selectElements.forEach(select => {
+                // Add focus events to enhance accessibility
+                select.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                select.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+                
+                // Prevent scrolling issues
+                select.addEventListener('mousewheel', function(e) {
+                    e.preventDefault();
+                });
+            });
+            
+            // Ensure the form submission works properly
+            const predictionForm = document.getElementById('prediction-form');
+            if (predictionForm) {
+                predictionForm.addEventListener('submit', function(e) {
+                    console.log('Form submitted');
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

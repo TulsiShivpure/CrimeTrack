@@ -1,0 +1,541 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crime Rate Insight | Safe India</title>
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="stylesheet" href="">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <style>
+        :root {
+            --primary: #eab308;          /* Yellow */
+            --primary-dark: #ca8a04;     /* Darker yellow */
+            --secondary: #facc15;        /* Lighter yellow */
+            --accent: #f59e0b;           /* Amber/orange accent */
+            --bg-dark: #0d1b2a;          /* Navy blue dark background */
+            --bg-light: #1b263b;         /* Navy blue lighter background */
+            --text-primary: #f8fafc;     /* Text colors */
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: rgba(71, 85, 105, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #162236 50%, #1e2b3d 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("");
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .glow {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, rgba(10, 16, 35, 0) 70%);
+            filter: blur(60px);
+            z-index: -1;
+        }
+
+        .glow-1 {
+            top: -20vw;
+            right: -10vw;
+        }
+
+        .glow-2 {
+            bottom: -25vw;
+            left: -15vw;
+            background: radial-gradient(circle, rgba(250, 204, 21, 0.15) 0%, rgba(10, 16, 35, 0) 70%);
+        }
+
+        header {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(27, 38, 59, 0.6);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
+            gap: 1rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
+        }
+
+        .quote {
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            position: relative;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .quote::before, .quote::after {
+            content: '"';
+            font-family: Georgia, serif;
+            font-size: 1.75rem;
+            color: var(--primary);
+            opacity: 0.4;
+            position: absolute;
+            line-height: 0;
+        }
+
+        .quote::before {
+            left: -1.25rem;
+            top: 0.5rem;
+        }
+
+        .quote::after {
+            right: -1.25rem;
+            bottom: 0;
+        }
+
+        .prediction {
+            background: rgba(30, 51, 79, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            margin: 40px auto;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .prediction:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Selection info styling */
+        .selection-info {
+            background-color: rgba(51, 65, 95, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(71, 85, 105, 0.8);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        td.label {
+            font-weight: 500;
+            color: var(--text-muted);
+            width: 50%;
+            padding: 10px;
+        }
+
+        td.sel, td.result {
+            font-weight: 500;
+            padding: 10px;
+            color: var(--text-primary);
+            background-color: transparent;
+        }
+
+        /* Stats section styling */
+        .stats-section {
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background-color: rgba(51, 65, 95, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(71, 85, 105, 0.8);
+        }
+
+        .crime-rate-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .crime-rate-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .crime-rate-value {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background-color: #374151;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            position: absolute;
+            height: 100%;
+            width: 76.5%;
+            background: linear-gradient(to right, #4ade80, #fbbf24, #ef4444);
+            border-radius: 4px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background-color: rgba(51, 65, 95, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(71, 85, 105, 0.8);
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .metric-value.yellow {
+            color: var(--primary);
+        }
+
+        .metric-value.red {
+            color: #ef4444;
+        }
+
+        .metric-value.high-risk {
+            color: var(--primary);
+        }
+
+        .tags-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .tag {
+            background-color: rgba(51, 65, 95, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            color: var(--primary);
+        }
+
+        /* Completely redesigned button style */
+        .button2 {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #eab308;
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 1.5rem;
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(234, 179, 8, 0.25);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .btn i {
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background-color: #facc15;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(234, 179, 8, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 10px rgba(234, 179, 8, 0.3);
+        }
+
+        .high-risk {
+            color: var(--primary);
+        }
+
+        footer {
+            background-color: rgba(27, 38, 59, 0.6);
+            backdrop-filter: blur(10px);
+            color: var(--text-muted);
+            text-align: center;
+            padding: 20px 10px;
+            font-size: 0.9em;
+            margin-top: auto;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float { 
+            animation: float 6s ease-in-out infinite; 
+        }
+
+        .progress-bar-container {
+            height: 10px;
+            background-color: #374151;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            margin: 10px 0 25px 0;
+        }
+
+        .progress-bar {
+            position: absolute;
+            height: 100%;
+            width: 0%; /* Will be set dynamically */
+            background: linear-gradient(to right, #4ade80, #fbbf24, #ef4444);
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
+        }
+        
+        /* New scale markers */
+        .scale-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            padding: 0 2px;
+            position: relative;
+        }
+        
+        .scale-marker {
+            position: relative;
+            font-size: 0.8em;
+            color: var(--text-muted);
+            flex: 1;
+            text-align: center;
+        }
+        
+        .scale-marker::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 6px;
+            width: 2px;
+            background-color: var(--text-muted);
+        }
+        
+        .current-value-marker {
+            position: absolute;
+            bottom: -25px;
+            transform: translateX(-50%);
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        
+        .current-value-marker::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 5px solid var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background glows -->
+    <div class="glow glow-1"></div>
+    <!-- <div class="glow glow-2"></div> -->
+
+    <header>
+        <div class="logo-container">
+            <h1>Crime Track</h1>
+        </div>
+        <p class="quote">Awareness is the first step toward a safer society.</p>
+    </header>       
+    
+    <section class="prediction float">
+        <div class="selection-info">
+            <table>
+                <tr>
+                    <td class="label">Selected City:</td>
+                    <td class="sel">{{ city_name }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Selected Crime Type:</td>
+                    <td class="sel">{{ crime_type }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Selected Year:</td>
+                    <td class="sel">{{ year }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="crime-rate-display">
+                    <span class="crime-rate-label">Predicted Crime Rate</span>
+                    <span class="crime-rate-value" id="crimeRateValue">{{ crime_rate }}</span>
+                </div>
+                
+                <!-- Scale markers -->
+                <div class="scale-container">
+                    <!-- <span class="scale-marker">0</span>
+                    <span class="scale-marker">4</span>
+                    <span class="scale-marker">8</span>
+                    <span class="scale-marker">12</span>
+                    <span class="scale-marker">16</span>
+                    <span class="scale-marker">20</span> -->
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="current-value-marker" id="currentValueMarker"></div>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Crime Status</div>
+                    <div class="metric-value high-risk">{{ crime_status }}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Population (in Lakhs)</div>
+                    <div class="metric-value yellow">{{ population }}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Estimated Number of Cases</div>
+                    <div class="metric-value yellow">{{ cases }}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Crime Rate</div>
+                    <div class="metric-value high-risk">{{ crime_rate }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button2">
+            <a href="{% url 'index' %}" style="text-decoration: none;">
+                <button type="button" class="btn">
+                    <i data-lucide="refresh-cw" width="24" height="24"></i>
+                    Predict Again
+                </button>
+            </a>            
+        </div>
+    </section>
+
+    <script>
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            // Get the crime rate value
+            const crimeRateElement = document.getElementById('crimeRateValue');
+            const crimeRateValue = parseFloat(crimeRateElement.innerText);
+            
+            // Calculate percentage (based on scale of 0-20)
+            const maxValue = 20;
+            let percentage = (crimeRateValue / maxValue) * 100;
+            
+            // Cap at 100% for values over 20
+            percentage = Math.min(percentage, 100);
+            
+            // Update progress bar width
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            
+            // Position the current value marker
+            const currentValueMarker = document.getElementById('currentValueMarker');
+            currentValueMarker.innerText = crimeRateValue.toFixed(2);
+            currentValueMarker.style.left = percentage + '%';
+            
+            // Determine color based on value ranges
+            let barColor;
+            if (crimeRateValue < 5) {
+                barColor = '#4ade80'; // Green
+            } else if (crimeRateValue < 10) {
+                barColor = '#fbbf24'; // Yellow
+            } else {
+                barColor = '#ef4444'; // Red
+            }
+            
+            // Optional: Change to solid color instead of gradient based on value
+            // progressBar.style.background = barColor;
+        });
+    </script>
+</body>
+</html>
